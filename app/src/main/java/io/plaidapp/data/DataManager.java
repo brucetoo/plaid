@@ -56,6 +56,7 @@ public abstract class DataManager extends BaseDataManager
                        FilterAdapter filterAdapter) {
         super(context);
         this.filterAdapter = filterAdapter;
+        //AtomicInteger 线程安全提供加减的类
         loadingCount = new AtomicInteger(0);
         setupPageIndexes();
     }
@@ -193,6 +194,7 @@ public abstract class DataManager extends BaseDataManager
         });
     }
 
+    //@TODO 看到这里
     private void loadDesignerNewsSearch(final Source.DesignerNewsSearchSource source,
                                         final int page) {
         getDesignerNewsApi().search(source.query, page, new Callback<StoriesResponse>() {
