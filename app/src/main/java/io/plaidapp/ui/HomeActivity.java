@@ -159,11 +159,11 @@ public class HomeActivity extends Activity {
                 checkEmptyState();
             }
         };
-        //adapter的绑定
+        //adapter的绑定 传递dataManager主要是监听底部加载完成的回调
         adapter = new FeedAdapter(this, dataManager, PocketUtils.isPocketInstalled(this));
         grid.setAdapter(adapter);
         layoutManager = new GridLayoutManager(this, columns);
-        //加载中的视图占屏幕宽度
+        //加载中的视图占屏幕宽度 --- 区分item
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -171,6 +171,7 @@ public class HomeActivity extends Activity {
             }
         });
         grid.setLayoutManager(layoutManager);
+        //居然可以设置两个监听
         grid.addOnScrollListener(gridScroll);
         grid.addOnScrollListener(new InfiniteScrollListener(layoutManager, dataManager) {
             @Override
@@ -350,6 +351,9 @@ public class HomeActivity extends Activity {
 
     }
 
+    /**
+     * 设置应用退回到后台，在最近列表中展示的样式
+     */
     private void setupTaskDescription() {
         // set a silhouette icon in overview as the launcher icon is a bit busy
         // and looks bad on top of colorPrimary

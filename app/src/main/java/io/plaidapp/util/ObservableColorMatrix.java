@@ -22,13 +22,28 @@ import android.util.Property;
 /**
  * An extension to {@link ColorMatrix} which caches the saturation value for animation purposes.
  *
- * TODO: Look into this: https://github
- * .com/square/picasso/commit/a181e0fbead6889347b39ac49363dbedde308120
- * https://blog.neteril.org/blog/2014/11/23/android-material-image-loading/
+ * TODO: Look into this:
+ * http://github.com/square/picasso/commit/a181e0fbead6889347b39ac49363dbedde308120
+ * http://blog.neteril.org/blog/2014/11/23/android-material-image-loading/
  */
 public class ObservableColorMatrix extends ColorMatrix {
 
     private float saturation = 1f;
+//    public static final Property<ObservableColorMatrix, Float> SATURATION1 = new Property<ObservableColorMatrix, Float>(Float.class,"saturation") {
+//        @Override
+//        public Float get(ObservableColorMatrix object) {
+//            return null;
+//        }
+//
+//        @Override
+//        public void set(ObservableColorMatrix object, Float value) {
+//            super.set(object, value);
+//        }
+//    };
+
+    /**
+     * 自定义饱和度的属性，用于执行动画
+     */
     public static final Property<ObservableColorMatrix, Float> SATURATION = new AnimUtils
             .FloatProperty<ObservableColorMatrix>("saturation") {
 

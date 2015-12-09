@@ -36,6 +36,7 @@ import io.plaidapp.R;
 
 /**
  * A view group that draws a badge drawable on top of it's contents.
+ * 宽高比 4:3 带有印章的ImageView
  */
 public class BadgedFourThreeImageView extends FourThreeImageView {
 

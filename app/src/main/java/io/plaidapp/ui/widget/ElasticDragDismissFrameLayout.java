@@ -16,12 +16,15 @@
 
 package io.plaidapp.ui.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
@@ -56,18 +59,24 @@ public class ElasticDragDismissFrameLayout extends FrameLayout {
     }
 
     public ElasticDragDismissFrameLayout(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, 0);
+        super(context, attrs);
     }
 
     public ElasticDragDismissFrameLayout(Context context, AttributeSet attrs,
                                          int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        super(context, attrs, defStyleAttr);
+        init(attrs);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public ElasticDragDismissFrameLayout(Context context, AttributeSet attrs,
                                          int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
+        init(attrs);
+    }
+
+    private void init(AttributeSet attrs) {
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.ElasticDragDismissFrameLayout, 0, 0);
 
@@ -113,9 +122,18 @@ public class ElasticDragDismissFrameLayout extends FrameLayout {
 
     }
 
+    /**
+     * 开始内嵌View滚动的回调
+     * @param child
+     * @param target
+     * @param nestedScrollAxes
+     * @return
+     */
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-        return (nestedScrollAxes & View.SCROLL_AXIS_VERTICAL) != 0;
+//        return (nestedScrollAxes & View.SCROLL_AXIS_VERTICAL) != 0;
+        //判断是不是垂直滚动
+        return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
     }
 
     @Override
@@ -143,8 +161,9 @@ public class ElasticDragDismissFrameLayout extends FrameLayout {
                     .scaleX(1f)
                     .scaleY(1f)
                     .setDuration(200L)
-                    .setInterpolator(AnimationUtils.loadInterpolator(getContext(), android.R
-                            .interpolator.fast_out_slow_in))
+//                    .setInterpolator(AnimationUtils.loadInterpolator(getContext(), android.R
+//                            .interpolator.fast_out_slow_in))
+                    .setInterpolator(new OvershootInterpolator())
                     .setListener(null)
                     .start();
             totalDrag = 0;
@@ -182,10 +201,11 @@ public class ElasticDragDismissFrameLayout extends FrameLayout {
         // track the direction & set the pivot point for scaling
         // don't double track i.e. if start dragging down and then reverse, keep tracking as
         // dragging down until they reach the 'natural' position
-        if (scroll < 0 && !draggingUp && !draggingDown) {
+        //第一次滚动时候的中立点
+        if (scroll < 0 && !draggingUp && !draggingDown) { //下拉
             draggingDown = true;
             if (shouldScale) setPivotY(getHeight());
-        } else if (scroll > 0 && !draggingDown && !draggingUp) {
+        } else if (scroll > 0 && !draggingDown && !draggingUp) { //上拉
             draggingUp = true;
             if (shouldScale) setPivotY(0f);
         }
@@ -211,6 +231,7 @@ public class ElasticDragDismissFrameLayout extends FrameLayout {
 
         // if we've reversed direction and gone past the settle point then clear the flags to
         // allow the list to get the scroll events & reset any transforms
+        // 滑动后在反向滑动 View的状态恢复原始
         if ((draggingDown && totalDrag >= 0)
                 || (draggingUp && totalDrag <= 0)) {
             totalDrag = dragTo = dragFraction = 0;

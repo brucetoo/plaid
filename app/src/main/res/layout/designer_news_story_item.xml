@@ -54,7 +54,7 @@
             android:padding="@dimen/spacing_normal"
             android:scaleType="centerInside"
             android:src="@drawable/ic_pocket"/>
-
+;
         <!-- Using a TextView rather than a button to have better control over the padding -->
         <TextView
             android:id="@+id/story_comments"

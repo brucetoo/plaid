@@ -46,7 +46,7 @@ public abstract class DataManager extends BaseDataManager
         implements FilterAdapter.FiltersChangedListener, DataLoadingSubject {
 
     private final FilterAdapter filterAdapter;
-    private AtomicInteger loadingCount;
+    private AtomicInteger loadingCount;//用AtomicInteger主要是保证线程安全（多线程处理时用）
     private Map<String, Integer> pageIndexes;
 
     /**
@@ -57,6 +57,7 @@ public abstract class DataManager extends BaseDataManager
         super(context);
         this.filterAdapter = filterAdapter;
         //AtomicInteger 线程安全提供加减的类
+        //主要是用于判断异步加载数据是否完成来确定底部LoadingView是否显示的情况
         loadingCount = new AtomicInteger(0);
         setupPageIndexes();
     }
@@ -67,6 +68,10 @@ public abstract class DataManager extends BaseDataManager
         }
     }
 
+    /**
+     * 通过loadingCount来判断是否加载完成数据
+     * @return
+     */
     @Override
     public boolean isDataLoading() {
         return loadingCount.get() > 0;
@@ -85,8 +90,13 @@ public abstract class DataManager extends BaseDataManager
     @Override
     public void onFilterRemoved(Source removed) { } // no-op
 
+    /**
+     * 加载数据
+     * @param source
+     */
     private void loadSource(Source source) {
         if (source.active) {
+            //数据+1后获取 区分 getAndIncrement 是获取到值后在+1 类似用 ++i 和 i++的区别
             loadingCount.incrementAndGet();
             int page = getNextPageIndex(source.key);
             switch (source.key) {
@@ -158,6 +168,7 @@ public abstract class DataManager extends BaseDataManager
             public void success(StoriesResponse storiesResponse, Response response) {
                 if (storiesResponse != null
                         && sourceIsEnabled(SourceManager.SOURCE_DESIGNER_NEWS_POPULAR)) {
+                    //设置PlainItem中的属性
                     setPage(storiesResponse.stories, page);
                     setDataSource(storiesResponse.stories,
                             SourceManager.SOURCE_DESIGNER_NEWS_POPULAR);
@@ -194,7 +205,7 @@ public abstract class DataManager extends BaseDataManager
         });
     }
 
-    //@TODO 看到这里
+    // TODO retrofit的使用
     private void loadDesignerNewsSearch(final Source.DesignerNewsSearchSource source,
                                         final int page) {
         getDesignerNewsApi().search(source.query, page, new Callback<StoriesResponse>() {
@@ -205,6 +216,7 @@ public abstract class DataManager extends BaseDataManager
                     setDataSource(storiesResponse.stories, source.key);
                     onDataLoaded(storiesResponse.stories);
                 }
+                //加载数据成功后 loadingCount 减1
                 loadingCount.decrementAndGet();
             }
 

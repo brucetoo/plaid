@@ -107,6 +107,10 @@ import retrofit.converter.GsonConverter;
 
 public class DribbbleShot extends Activity {
 
+    /**
+     * 一般与DribbbleShot activity相关的属性或变量或者方法都应该在这里声明
+     * 在解耦上和代码整洁可读性上都有很大的优势
+     */
     protected final static String EXTRA_SHOT = "shot";
     private static final int RC_LOGIN_LIKE = 0;
     private static final int RC_LOGIN_COMMENT = 1;

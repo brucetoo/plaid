@@ -55,6 +55,10 @@ public abstract class BaseDataManager implements
         createProductHuntApi();
     }
 
+    /**
+     * 用在数据加载完后的 回调处理数据到 adapter
+     * @param data
+     */
     public abstract void onDataLoaded(List<? extends PlaidItem> data);
 
     protected static void setPage(List<? extends PlaidItem> items, int page) {

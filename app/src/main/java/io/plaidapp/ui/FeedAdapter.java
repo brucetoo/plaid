@@ -97,6 +97,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         layoutInflater = LayoutInflater.from(host);
         comparator = new PlaidItemComparator();
         items = new ArrayList<>();
+        /**Indicates whether each item in the data set can be represented with a unique identifier
+         * of type */
         setHasStableIds(true);
     }
 
@@ -259,6 +261,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void bindDribbbleShotView(final Shot shot, final DribbbleShotHolder holder) {
         final BadgedFourThreeImageView iv = (BadgedFourThreeImageView) holder.itemView;
+        //Glide加载图片
         Glide.with(host)
                 .load(shot.images.best())
                 .listener(new RequestListener<String, GlideDrawable>() {
@@ -270,7 +273,9 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                                            isFirstResource) {
                         if (!shot.hasFadedIn) {
                             iv.setHasTransientState(true);
+                            //Material加载图片时的饱和度变化效果
                             final ObservableColorMatrix cm = new ObservableColorMatrix();
+                            //自定义的属性
                             ObjectAnimator saturation = ObjectAnimator.ofFloat(cm,
                                     ObservableColorMatrix.SATURATION, 0f, 1f);
                             saturation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener
@@ -281,6 +286,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     // drawable so need this update listener.  Also have to create a
                                     // new CMCF as the matrix is immutable :(
                                     if (iv.getDrawable() != null) {
+                                        //为drawable 设置colorFilter
                                         iv.getDrawable().setColorFilter(new
                                                 ColorMatrixColorFilter(cm));
                                     }
